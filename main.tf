@@ -109,6 +109,22 @@ module "db_nic" {
   
 }
 
+
+module "storage" {
+  source               = "./modules/storage_account"
+  storage_account_name = "ehealthstorage${random_string.suffix.result}"
+  resource_group_name  = azurerm_resource_group.rg.name
+  location             = azurerm_resource_group.rg.location
+  container_names      = ["patient-files", "doctor-files"]
+}
+
+
+resource "random_string" "suffix" {
+  length  = 6
+  special = false
+  upper   = false
+}
+
 resource "azurerm_network_interface_security_group_association" "front_assoc" {
   network_interface_id = module.vnet.subnet_ids["public_subnet"]
   network_security_group_id = module.public_nsg.nsg_id
