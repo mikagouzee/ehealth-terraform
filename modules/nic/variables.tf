@@ -17,14 +17,14 @@ variable "ip_configuration" {
   description = "Var for the IP configuration"
   type = object({
     name = string
-    subnet_id = string
+    subnet_name = string
     private_ip_address_allocation = string
     public_ip_address_id = optional(string)
     private_ip_address = optional(string)
   })
   default = {
     name = "internal"
-    subnet_id = "default_subnet_id"
+    subnet_name = "default_subnet_id"
     private_ip_address_allocation = "Dynamic"
   }
 }
