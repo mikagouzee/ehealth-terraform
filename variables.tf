@@ -15,3 +15,9 @@ variable "nsg_name" {
   description = "rg location in azure"
   default = "my-nsg-default-name"
 }
+
+variable "nic_name" {
+  type = string
+  description = "nic name"
+  default = "my_nic_default_name"
+}

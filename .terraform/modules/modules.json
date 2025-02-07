@@ -1,1 +1,1 @@
-{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"vnet","Source":"./modules/modules_vnet","Dir":"modules/modules_vnet"}]}
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"network_interface_configuration","Source":"./modules/nic","Dir":"modules/nic"},{"Key":"network_security_group","Source":"./modules/nsg","Dir":"modules/nsg"},{"Key":"vnet","Source":"./modules/vnet","Dir":"modules/vnet"}]}
