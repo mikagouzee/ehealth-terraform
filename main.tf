@@ -67,6 +67,14 @@ source              = "./modules/nsg"
   ]
 }
 
+module "public_ip_front" {
+  source = "./modules/public_ip"
+  public_ip_name = "public_ip_front"
+  resource_group_location = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method = "dynamic"
+}
+
 module "front_nic" {
   source = "./modules/nic"
   nic_name = "front-nic"
@@ -77,7 +85,7 @@ module "front_nic" {
       name = "internal"
       subnet_name = "public_subnet"
       private_ip_address_allocation = "Dynamic"
-      public_ip_address_id = ""
+      public_ip_address_id = module.public_ip_front.public_ip_id
     }
 }
 
