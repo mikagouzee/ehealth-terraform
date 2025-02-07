@@ -136,7 +136,6 @@ module "front" {
   admin_username = var.front_vm_username
   password_auth = true
 
-  os_disk_type        = "Standard_LRS"
   subnet_id           = module.vnet.subnet_ids["public_subnet"]
 
   source_image_reference = {
@@ -146,10 +145,11 @@ module "front" {
     version = "latest"
   }
 
+  //storage account types : "Premium_LRS" "Standard_LRS" "StandardSSD_LRS" "StandardSSD_ZRS" "Premium_ZRS"
   os_disk = {
     name = ""
     caching = "ReadWrite"
-    storage_account_type = "Attach"
+    storage_account_type = "Standard_LRS"
   }
 
 }
@@ -166,7 +166,6 @@ module "back" {
   admin_username = var.back_vm_username
   password_auth = true
 
-  os_disk_type        = "Standard_LRS"
   subnet_id           = module.vnet.subnet_ids["public_subnet"]
 
   source_image_reference = {
@@ -176,10 +175,11 @@ module "back" {
     version = "latest"
   }
 
+  //storage account types : "Premium_LRS" "Standard_LRS" "StandardSSD_LRS" "StandardSSD_ZRS" "Premium_ZRS"
   os_disk = {
     name = ""
     caching = "ReadWrite"
-    storage_account_type = "Attach"
+    storage_account_type = "Standard_LRS"
   }
 
 }

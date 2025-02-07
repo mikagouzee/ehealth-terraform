@@ -1,6 +1,7 @@
 variable "vm_name" {
   description = "The name of the virtual machine"
   type        = string
+  default = "vm01"
 }
 
 variable "location" {
@@ -15,11 +16,6 @@ variable "resource_group_name" {
 
 variable "vm_size" {
   description = "The size of the virtual machine"
-  type        = string
-}
-
-variable "os_disk_type" {
-  description = "The type of the OS disk"
   type        = string
 }
 
