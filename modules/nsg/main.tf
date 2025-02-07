@@ -2,7 +2,6 @@ resource "azurerm_network_security_group" "nsg" {
   name = var.nsg_name
   resource_group_name = var.resource_group_name
   location = var.location
-  
   dynamic "security_rule" {
     for_each = var.security_rules
     content{
