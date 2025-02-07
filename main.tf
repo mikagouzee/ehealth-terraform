@@ -125,7 +125,7 @@ resource "azurerm_network_interface_security_group_association" "db_assoc" {
 }
 
 module "front" {
-  source = "./modules/vm"
+  source = "./modules/linux-vm"
 
   vm_name = var.front_vm_name
   location = azurerm_resource_group.rg.location
@@ -155,7 +155,7 @@ module "front" {
 }
 
 module "back" {
-  source = "./modules/vm"
+  source = "./modules/linux-vm"
 
   vm_name = var.back_vm_name
   location = azurerm_resource_group.rg.location
