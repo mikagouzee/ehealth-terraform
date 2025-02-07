@@ -5,8 +5,8 @@ resource "azurerm_linux_virtual_machine" "vm" {
   network_interface_ids = var.nic_id
   size                  = var.vm_size
   admin_username        = var.admin_username
-  disable_password_authentication = var.password_auth
-  
+  disable_password_authentication = false
+  admin_password = "P@$$w0rd1234!" 
 
   os_disk {
     name              = var.os_disk.name
@@ -25,6 +25,6 @@ resource "azurerm_linux_virtual_machine" "vm" {
   tags = var.tags
 }
 
-locals {
-  public_ip_map = {for nicid in azurerm_linux_virtual_machine.vm.network_interface_ids: nicid.name => nicid.id }
-}
+# locals {
+#   public_ip_map = {for nicid in azurerm_linux_virtual_machine.vm.network_interface_ids: nicid.name => nicid.id }
+# }

@@ -67,6 +67,46 @@ module "db_nsg"{
     ]
 }
 
+resource "azurerm_public_ip" "public_ip" {
+  name = var.public_ip_name
+  location = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method = "Dynamic"
+  tags = {
+    environment = "production"
+  }
+}
+
+module "front" {
+  source = "./modules/linux-vm"
+
+  vm_name = var.front_vm_name
+  location = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  vm_size = var.front_vm_size
+  nic_id = [module.front_nic.nic_id]
+
+  admin_username = var.front_vm_username
+  password_auth = true
+
+  subnet_id = module.vnet.subnet_ids["public_subnet"]
+
+  source_image_reference = {
+    publisher = "Canonical"
+    offer = "UbuntuServer"
+    sku = "18.04-LTS"
+    version = "latest"
+  }
+
+  //storage account types : "Premium_LRS" "Standard_LRS" "StandardSSD_LRS" "StandardSSD_ZRS" "Premium_ZRS"
+  os_disk = {
+    name = ""
+    caching = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+}
+
 module "front_nic" {
   source = "./modules/nic"
   nic_name = "front-nic"
@@ -77,7 +117,7 @@ module "front_nic" {
       name = "internal"
       subnet_name = "public_subnet"
       private_ip_address_allocation = "Dynamic"
-      public_ip_address_id = ""
+      public_ip_address_id = azurerm_public_ip.public_ip.id
     }
 }
 
@@ -110,49 +150,20 @@ module "db_nic" {
 }
 
 resource "azurerm_network_interface_security_group_association" "front_assoc" {
-  network_interface_id = module.vnet.subnet_ids["public_subnet"]
+  network_interface_id = module.front_nic.nic_id
   network_security_group_id = module.public_nsg.nsg_id
 }
 
 resource "azurerm_network_interface_security_group_association" "back_assoc" {
-  network_interface_id = module.vnet.subnet_ids["private_subnet"]
+  network_interface_id = module.backend_nic.nic_id
   network_security_group_id = module.private_nsg.nsg_id
 }
 
 resource "azurerm_network_interface_security_group_association" "db_assoc" {
-  network_interface_id = module.vnet.subnet_ids["db_subnet"]
+  network_interface_id = module.db_nic.nic_id
   network_security_group_id = module.db_nsg.nsg_id
 }
 
-module "front" {
-  source = "./modules/linux-vm"
-
-  vm_name = var.front_vm_name
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  vm_size = var.front_vm_size
-  nic_id = [module.front_nic.nic_id]
-
-  admin_username = var.front_vm_username
-  password_auth = true
-
-  subnet_id           = module.vnet.subnet_ids["public_subnet"]
-
-  source_image_reference = {
-    publisher = "Canonical"
-    offer = "UbuntuServer"
-    sku = "18.04-LTS"
-    version = "latest"
-  }
-
-  //storage account types : "Premium_LRS" "Standard_LRS" "StandardSSD_LRS" "StandardSSD_ZRS" "Premium_ZRS"
-  os_disk = {
-    name = ""
-    caching = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-}
 
 module "back" {
   source = "./modules/linux-vm"
