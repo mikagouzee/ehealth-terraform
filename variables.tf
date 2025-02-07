@@ -22,6 +22,13 @@ variable "nic_name" {
   default = "my_nic_default_name"
 }
 
+variable "public_ip_name" {
+  type = string
+  description = "Public ip name in azure"
+  default = "my-public-ip-default"
+}
+
+
 ##FRONT END MACHINE##
 variable "front_vm_size" {
   type = string
