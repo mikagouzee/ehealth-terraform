@@ -67,16 +67,6 @@ module "db_nsg"{
     ]
 }
 
-resource "azurerm_public_ip" "public_ip" {
-  name = var.public_ip_name
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  allocation_method = "Dynamic"
-  tags = {
-    environment = "production"
-  }
-}
-
 module "front" {
   source = "./modules/linux-vm"
 
@@ -107,6 +97,14 @@ module "front" {
 
 }
 
+module "public_ip_front" {
+  source = "./modules/public_ip"
+  public_ip_name = "public_ip_front"
+  resource_group_location = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method = "dynamic"
+}
+
 module "front_nic" {
   source = "./modules/nic"
   nic_name = "front-nic"
@@ -117,7 +115,7 @@ module "front_nic" {
       name = "internal"
       subnet_name = "public_subnet"
       private_ip_address_allocation = "Dynamic"
-      public_ip_address_id = azurerm_public_ip.public_ip.id
+      public_ip_address_id = module.public_ip_front.public_ip_id
     }
 }
 
