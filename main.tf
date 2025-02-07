@@ -123,3 +123,63 @@ resource "azurerm_network_interface_security_group_association" "db_assoc" {
   network_interface_id = module.vnet.subnet_ids["db_subnet"]
   network_security_group_id = module.db_nsg.nsg_id
 }
+
+module "front" {
+  source = "./modules/vm"
+
+  vm_name = var.front_vm_name
+  location = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  vm_size = var.front_vm_size
+  nic_id = [module.front_nic.nic_id]
+
+  admin_username = var.front_vm_username
+  password_auth = true
+
+  os_disk_type        = "Standard_LRS"
+  subnet_id           = module.vnet.subnet_ids["public_subnet"]
+
+  source_image_reference = {
+    publisher = "Canonical"
+    offer = "UbuntuServer"
+    sku = "18.04-LTS"
+    version = "latest"
+  }
+
+  os_disk = {
+    name = ""
+    caching = "ReadWrite"
+    storage_account_type = "Attach"
+  }
+
+}
+
+module "back" {
+  source = "./modules/vm"
+
+  vm_name = var.back_vm_name
+  location = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  nic_id = [module.backend_nic.nic_id]
+  vm_size = var.back_vm_size
+
+  admin_username = var.back_vm_username
+  password_auth = true
+
+  os_disk_type        = "Standard_LRS"
+  subnet_id           = module.vnet.subnet_ids["public_subnet"]
+
+  source_image_reference = {
+    publisher = "Canonical"
+    offer = "UbuntuServer"
+    sku = "18.04-LTS"
+    version = "latest"
+  }
+
+  os_disk = {
+    name = ""
+    caching = "ReadWrite"
+    storage_account_type = "Attach"
+  }
+
+}
