@@ -2,7 +2,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   name                  = var.vm_name
   location              = var.location
   resource_group_name   = var.resource_group_name
-  network_interface_ids = var.nic_id
+  network_interface_ids  = var.nic_id
   size                  = var.vm_size
   admin_username        = var.admin_username
   disable_password_authentication = false
@@ -21,10 +21,16 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = "latest"
   }
 
-  
-  tags = var.tags
-}
+  # connection {
+  #   type = var.connection.type
+  #   host = var.connection.host
+  #   user = var.connection.user
+  #   password = var.connection.password
+  # } 
 
-# locals {
-#   public_ip_map = {for nicid in azurerm_linux_virtual_machine.vm.network_interface_ids: nicid.name => nicid.id }
-# }
+
+  # provisioner "remote-exec" {
+  #   inline = var.remote_exec.inline
+  # }
+
+}

@@ -10,6 +10,16 @@ variable "resource_group_location" {
   default = "my-rg-location-default"
 }
 
+variable "front_instances" {
+  type = number
+  description = "Amount of frontend VM to create"
+}
+
+variable "back_instances" {
+  type = number
+  description = "Amount of backend VM to create"
+}
+
 variable "nsg_name" {
   type = string
   description = "rg location in azure"

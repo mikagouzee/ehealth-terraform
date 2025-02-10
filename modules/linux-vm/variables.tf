@@ -75,3 +75,19 @@ variable "front_vm_username" {
   description = "username for the front end machine"
   default = "azureuser"
 }
+
+# variable "remote_exec"{
+#   type = object({
+#     name = string
+#     inline = list(string)
+#   })
+# }
+
+# variable "connection" {
+#   type = object({
+#       type = string
+#       user = string
+#       password = string
+#       host = string
+#     })
+# }
