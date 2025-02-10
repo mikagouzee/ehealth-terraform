@@ -28,7 +28,6 @@ resource "azurerm_linux_virtual_machine" "vm" {
   #   password = var.connection.password
   # } 
 
-
   # provisioner "remote-exec" {
   #   inline = var.remote_exec.inline
   # }

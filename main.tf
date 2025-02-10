@@ -31,44 +31,94 @@ module "subnet" {
 }
 
 
-module "db_nsg"{
-source              = "./modules/nsg"
-  nsg_name            = "dbNSG"
+###FRONT END###
+
+module "public_ip_front" {
+  source = "./modules/public_ip"
+
+  # count = var.front_instances
+  public_ip_name = "public_ip_front"
+  resource_group_location = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  security_rules = [
-    {
-      name                       = "AllowMySQLFromBackend"
-      priority                   = 1001
-      direction                  = "Inbound"
-      access                     = "Allow"
-      protocol                   = "Tcp"
-      source_port_range          = "*"
-      destination_port_range     = "3306"
-      source_address_prefix      = "10.0.2.0/24"
-      destination_address_prefix = "*"
-    }
-  ]
+  allocation_method = "Dynamic"
 }
 
-###FRONT END###
+module "frontLoadbalancer" {
+  source = "./modules/loadbalancer"
+  lb_name = "lb-public"
+  location = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  frontendIpConfig = {
+    name = "lb_public_fip_name"
+    public_ip_address_id = module.public_ip_front.public_ip_id
+  }
+}
+
+module "lb_front_association" {
+  source = "./modules/loadbalancer/lb_addresspool_association"
+  nic_ids                 = [for i in range(var.front_instances) : module.front_nic[i].nic_id]
+  ip_configuration_name   = "internal"
+  backend_address_pool_id = module.frontLoadbalancer.addressPoolId
+}
+
+module "lbrule_front_http" {
+  source = "./modules/loadbalancer/lbrules"
+
+  ruleName              = "http_rule"
+  lb_id                 = module.frontLoadbalancer.id
+  protocol              = "Tcp"
+  inport                = 80
+  outport               = 80
+  //we should ideally implement a var to fetch the exact FIP config
+  fipconfigName         = module.frontLoadbalancer.frontend_ip_configuration_name
+  poolId                = [module.frontLoadbalancer.addressPoolId] 
+}
+
+module "lbrule_front_ssh" {
+  source = "./modules/loadbalancer/lbrules"
+
+  ruleName              = "ssh_rule"
+  lb_id                 = module.frontLoadbalancer.id
+  protocol              = "Tcp"
+  inport                = 22
+  outport               = 22
+  //we should ideally implement a var to fetch the exact FIP config
+  fipconfigName         = module.frontLoadbalancer.frontend_ip_configuration_name
+  poolId                = [module.frontLoadbalancer.addressPoolId] 
+}
+
 module "public_nsg" {
   source = "./modules/nsg"
 
   nsg_name = "publicNSG"
   resource_group_name = azurerm_resource_group.rg.name
   location = azurerm_resource_group.rg.location
-  //keep default rules for public network
-}
-
-module "public_ip_front" {
-  source = "./modules/public_ip"
-
-  count = var.front_instances
-  public_ip_name = "public_ip_front_${count.index}"
-  resource_group_location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  allocation_method = "Dynamic"
+  
+  security_rules = [
+    {
+      name                       = "SSH"
+      priority                   = 1001
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "22"
+      source_address_prefix      = module.public_ip_front.address
+      destination_address_prefix = "*"
+    },
+    {
+      name                       = "HTTP"
+      priority                   = 1002
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "80"
+      source_address_prefix      = module.public_ip_front.address
+      destination_address_prefix = "*"
+    }
+  ]
 }
 
 module "front_nic" {
@@ -83,7 +133,7 @@ module "front_nic" {
       name = "internal"
       subnet_name = "public_subnet"
       private_ip_address_allocation = "Dynamic"
-      public_ip_address_id = module.public_ip_front[count.index].public_ip_id 
+      # public_ip_address_id = module.public_ip_front[count.index].public_ip_id 
     }
 }
 
@@ -128,6 +178,51 @@ resource "azurerm_network_interface_security_group_association" "front_assoc" {
 
 
 ###BACK END###
+module "backLoadbalancer" {
+  source = "./modules/loadbalancer"
+  lb_name = "lb-private"
+  location = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  frontendIpConfig = {
+    name = "lb_private_fip_name"
+    subnet_id = module.subnet.subnet_ids["private_subnet"]
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+module "lb_back_association" {
+  source = "./modules/loadbalancer/lb_addresspool_association"
+  nic_ids                 = [for i in range(var.front_instances) : module.front_nic[i].nic_id]
+  ip_configuration_name   = "internal"
+  backend_address_pool_id = module.backLoadbalancer.addressPoolId
+}
+
+module "lbrule_back_http" {
+  source = "./modules/loadbalancer/lbrules"
+
+  ruleName              = "http_rule"
+  lb_id                 = module.backLoadbalancer.id
+  protocol              = "Tcp"
+  inport                = 80
+  outport               = 80
+  //we should ideally implement a var to fetch the exact FIP config
+  fipconfigName         = module.backLoadbalancer.frontend_ip_configuration_name
+  poolId                = [module.backLoadbalancer.addressPoolId] 
+}
+
+module "lbrule_back_ssh" {
+  source = "./modules/loadbalancer/lbrules"
+
+  ruleName              = "ssh_rule"
+  lb_id                 = module.backLoadbalancer.id
+  protocol              = "Tcp"
+  inport                = 22
+  outport               = 22
+  //we should ideally implement a var to fetch the exact FIP config
+  fipconfigName         = module.backLoadbalancer.frontend_ip_configuration_name
+  poolId                = [module.backLoadbalancer.addressPoolId] 
+}
 
 module "private_nsg"{
   source = "./modules/nsg"
@@ -204,7 +299,28 @@ resource "azurerm_network_interface_security_group_association" "back_assoc" {
   network_security_group_id = module.private_nsg.nsg_id
 }
 
+
 ###DATABASE###
+module "db_nsg"{
+  source              = "./modules/nsg"
+    nsg_name            = "dbNSG"
+    resource_group_name = azurerm_resource_group.rg.name
+    location            = azurerm_resource_group.rg.location
+    security_rules = [
+      {
+        name                       = "AllowMySQLFromBackend"
+        priority                   = 1001
+        direction                  = "Inbound"
+        access                     = "Allow"
+        protocol                   = "Tcp"
+        source_port_range          = "*"
+        destination_port_range     = "3306"
+        source_address_prefix      = "10.0.2.0/24"
+        destination_address_prefix = "*"
+      }
+    ]
+}
+
 module "db_nic" {
   source              = "./modules/nic"
   nic_name            = "db-nic"

@@ -41,3 +41,4 @@ terraform.rc
 
 .\.terraform\modules\modules.json
 .\terraform.lock.hcl
+.terraform.lock.hcl
