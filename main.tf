@@ -48,61 +48,23 @@ module "private_nsg"{
 }
 
 module "db_nsg"{
-  source              = "./modules/nsg"
-    nsg_name            = "dbNSG"
-    resource_group_name = azurerm_resource_group.rg.name
-    location            = azurerm_resource_group.rg.location
-    security_rules = [
-      {
-        name                       = "AllowMySQLFromBackend"
-        priority                   = 1001
-        direction                  = "Inbound"
-        access                     = "Allow"
-        protocol                   = "Tcp"
-        source_port_range          = "*"
-        destination_port_range     = "3306"
-        source_address_prefix      = "10.0.2.0/24"
-        destination_address_prefix = "*"
-      }
-    ]
-}
-
-module "front" {
-  source = "./modules/linux-vm"
-
-  vm_name = var.front_vm_name
-  location = azurerm_resource_group.rg.location
+source              = "./modules/nsg"
+  nsg_name            = "dbNSG"
   resource_group_name = azurerm_resource_group.rg.name
-  vm_size = var.front_vm_size
-  nic_id = [module.front_nic.nic_id]
-
-  admin_username = var.front_vm_username
-  password_auth = true
-
-  subnet_id = module.vnet.subnet_ids["public_subnet"]
-
-  source_image_reference = {
-    publisher = "Canonical"
-    offer = "UbuntuServer"
-    sku = "18.04-LTS"
-    version = "latest"
-  }
-
-  //storage account types : "Premium_LRS" "Standard_LRS" "StandardSSD_LRS" "StandardSSD_ZRS" "Premium_ZRS"
-  os_disk = {
-    name = ""
-    caching = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-}
-
-module "public_ip_front" {
-  source = "./modules/public_ip"
-  public_ip_name = "public_ip_front"
-  resource_group_location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  allocation_method = "dynamic"
+  location            = azurerm_resource_group.rg.location
+  security_rules = [
+    {
+      name                       = "AllowMySQLFromBackend"
+      priority                   = 1001
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "3306"
+      source_address_prefix      = "10.0.2.0/24"
+      destination_address_prefix = "*"
+    }
+  ]
 }
 
 module "front_nic" {
@@ -115,7 +77,7 @@ module "front_nic" {
       name = "internal"
       subnet_name = "public_subnet"
       private_ip_address_allocation = "Dynamic"
-      public_ip_address_id = module.public_ip_front.public_ip_id
+      public_ip_address_id = ""
     }
 }
 
@@ -147,64 +109,26 @@ module "db_nic" {
   
 }
 
-
-module "storage" {
-  source               = "./modules/storage_account"
-  storage_account_name = "ehealthstorage${random_string.suffix.result}"
-  resource_group_name  = azurerm_resource_group.rg.name
-  location             = azurerm_resource_group.rg.location
-  container_names      = ["patient-files", "doctor-files"]
-}
-
-
-resource "random_string" "suffix" {
-  length  = 6
-  special = false
-  upper   = false
-}
-
 resource "azurerm_network_interface_security_group_association" "front_assoc" {
-  network_interface_id = module.front_nic.nic_id
+  network_interface_id = module.vnet.subnet_ids["public_subnet"]
   network_security_group_id = module.public_nsg.nsg_id
 }
 
+
 resource "azurerm_network_interface_security_group_association" "back_assoc" {
-  network_interface_id = module.backend_nic.nic_id
+  network_interface_id = module.vnet.subnet_ids["private_subnet"]
   network_security_group_id = module.private_nsg.nsg_id
 }
 
+
 resource "azurerm_network_interface_security_group_association" "db_assoc" {
-  network_interface_id = module.db_nic.nic_id
+  network_interface_id = module.vnet.subnet_ids["db_subnet"]
   network_security_group_id = module.db_nsg.nsg_id
 }
-
-
-module "back" {
-  source = "./modules/linux-vm"
-
-  vm_name = var.back_vm_name
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  nic_id = [module.backend_nic.nic_id]
-  vm_size = var.back_vm_size
-
-  admin_username = var.back_vm_username
-  password_auth = true
-
-  subnet_id           = module.vnet.subnet_ids["public_subnet"]
-
-  source_image_reference = {
-    publisher = "Canonical"
-    offer = "UbuntuServer"
-    sku = "18.04-LTS"
-    version = "latest"
-  }
-
-  //storage account types : "Premium_LRS" "Standard_LRS" "StandardSSD_LRS" "StandardSSD_ZRS" "Premium_ZRS"
-  os_disk = {
-    name = ""
-    caching = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
+module "subnet" {
+  source = "./modules/sub"
+  resource_group_name  = azurerm_resource_group.rg.name
+  subnet_names         = var.subnet_names
+  subnet_prefixes      = var.subnet_prefixes
+  resource_group_location = azurerm_resource_group.rg.location
 }
