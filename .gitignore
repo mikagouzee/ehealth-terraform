@@ -38,3 +38,6 @@ terraform.rc
 
 #ignore provider details
 .\.terraform\providers\registry.terraform.io\ 
+
+.\.terraform\modules\modules.json
+.\terraform.lock.hcl

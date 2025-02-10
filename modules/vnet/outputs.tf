@@ -11,3 +11,7 @@ output "subnets" {
 output "subnet_ids" {
   value = local.subnet_id_map
 }
+
+output "vnet_name" {
+  value = azurerm_virtual_network.vnet.name
+}
