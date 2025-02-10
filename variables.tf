@@ -64,6 +64,7 @@ variable "back_vm_username" {
   description = "username for the back end machine"
   default = "azureuser"
 }
+
 variable "subnet_names" {
   description = "Liste des noms des sous-réseaux"
   type        = list(string)
@@ -74,8 +75,4 @@ variable "subnet_prefixes" {
   description = "Liste des préfixes des sous-réseaux"
   type        = list(string)
   default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-}
-variable "address_space_" {
-  description =  "L'espace d'adresses IP pour le réseau virtuel"
-  type        = list(string)
 }

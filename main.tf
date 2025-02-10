@@ -125,8 +125,10 @@ resource "azurerm_network_interface_security_group_association" "db_assoc" {
   network_interface_id = module.vnet.subnet_ids["db_subnet"]
   network_security_group_id = module.db_nsg.nsg_id
 }
+
 module "subnet" {
   source = "./modules/sub"
+  vnet_name = module.vnet.vnet_name
   resource_group_name  = azurerm_resource_group.rg.name
   subnet_names         = var.subnet_names
   subnet_prefixes      = var.subnet_prefixes
