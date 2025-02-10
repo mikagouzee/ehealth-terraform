@@ -15,9 +15,13 @@ variable "resource_group_name" {
 variable "resource_group_location" {
   description = "Location of the resource group to be  "
 }
-variable "address_space_" {
+variable "address_space" {
   description = "Liste "
   type        = list(string)
   default     = ["10.0.0.0/16"]
 }
 
+variable "vnet_name" {
+  description = "Le nom du réseau virtuel"
+  type        = string
+}

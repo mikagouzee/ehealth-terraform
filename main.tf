@@ -128,7 +128,9 @@ resource "azurerm_network_interface_security_group_association" "db_assoc" {
 module "subnet" {
   source = "./modules/sub"
   resource_group_name  = azurerm_resource_group.rg.name
+  vnet_name            = var.vnet_name
   subnet_names         = var.subnet_names
+  address_space        = var.address_space
   subnet_prefixes      = var.subnet_prefixes
   resource_group_location = azurerm_resource_group.rg.location
 }
