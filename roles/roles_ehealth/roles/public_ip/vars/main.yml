@@ -1,0 +1,6 @@
+---
+# vars file for public_ip
+public_ip_name: "public_ip_front"
+resource_group_name: "{{ resource_group_name }}"
+resource_group_location: "{{ resource_group_location }}"
+allocation_method: "Dynamic"

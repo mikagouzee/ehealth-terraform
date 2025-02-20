@@ -1,0 +1,12 @@
+---
+# vars file for network
+vnet_name: "myVNet"
+resource_group_name: "{{ resource_group_name }}"
+resource_group_location: "{{ resource_group_location }}"
+address_space:
+  - "10.0.0.0/16"
+subnets:
+  - name: "public_subnet"
+    prefix: "10.0.1.0/24"
+  - name: "private_subnet"
+    prefix: "10.0.2.0/24"

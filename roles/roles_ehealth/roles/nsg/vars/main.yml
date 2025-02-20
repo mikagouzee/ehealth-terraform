@@ -1,0 +1,15 @@
+---
+# vars file for nsg
+nsg_name: "publicNSG"
+resource_group_name: "{{ resource_group_name }}"
+resource_group_location: "{{ resource_group_location }}"
+security_rules:
+  - name: "SSH"
+    priority: 1001
+    direction: "Inbound"
+    access: "Allow"
+    protocol: "Tcp"
+    source_port_range: "*"
+    destination_port_range: "22"
+    source_address_prefix: "*"
+    destination_address_prefix: "*"

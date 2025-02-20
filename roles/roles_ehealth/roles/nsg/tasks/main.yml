@@ -1,0 +1,8 @@
+---
+# tasks file for nsg
+- name: Créer un groupe de sécurité réseau
+  azure.azcollection.azure_rm_networksecuritygroup:
+    name: "{{ nsg_name }}"
+    resource_group: "{{ resource_group_name }}"
+    location: "{{ resource_group_location }}"
+    security_rules: "{{ security_rules }}"

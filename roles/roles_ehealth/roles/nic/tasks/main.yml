@@ -1,0 +1,11 @@
+---
+# tasks file for nic
+- name: Créer une interface réseau
+  azure.azcollection.azure_rm_networkinterface:
+    name: "{{ nic_name }}"
+    resource_group: "{{ resource_group_name }}"
+    location: "{{ resource_group_location }}"
+    ip_configurations:
+      - name: "{{ ip_configuration.name }}"
+        subnet_id: "{{ subnet_id }}"
+        private_ip_address_allocation: "Dynamic"

@@ -1,0 +1,8 @@
+---
+# vars file for nic
+nic_name: "front-nic"
+resource_group_name: "{{ resource_group_name }}"
+resource_group_location: "{{ resource_group_location }}"
+ip_configuration:
+  name: "internal"
+subnet_id: "{{ subnet_id }}"

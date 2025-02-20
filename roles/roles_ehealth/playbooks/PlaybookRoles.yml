@@ -1,0 +1,13 @@
+- name: Déployer une infrastructure Azure
+  hosts: all #tous les hôtes de l'inventaire
+  gather_facts: no
+  become: true
+  roles:
+    - resource_group
+    - network
+    - public_ip
+    - load_balancer
+    - nsg
+    - nic
+    - linux_vm
+    - storage_account

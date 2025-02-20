@@ -1,0 +1,10 @@
+---
+# tasks file for load_balancer
+- name: Créer un load balancer
+  azure.azcollection.azure_rm_loadbalancer:
+    name: "{{ lb_name }}"
+    resource_group: "{{ resource_group_name }}"
+    location: "{{ resource_group_location }}"
+    frontend_ip_configurations:
+      - name: "{{ frontendIpConfig.name }}"
+        public_ip_address_id: "{{ frontendIpConfig.public_ip_address_id }}"

@@ -1,0 +1,9 @@
+---
+# tasks file for ressource_group
+
+- name: Créer un groupe de ressources Azure
+  azure.azcollection.azure_rm_resourcegroup:
+    name: "{{ resource_group_name }}"
+    location: "{{ resource_group_location }}"
+    tags:
+      environment: "production"

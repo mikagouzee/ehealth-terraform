@@ -1,0 +1,21 @@
+---
+# tasks file for linux_vm
+- name: Créer une machine virtuelle Linux sur Azure
+  azure.azcollection.azure_rm_virtualmachine:
+    name: "{{ vm_name }}"
+    resource_group: "{{ resource_group_name }}"
+    location: "{{ resource_group_location }}"
+    size: "{{ vm_size }}"
+    admin_username: "{{ admin_username }}"
+    admin_password: "{{ admin_password }}"
+    network_interfaces: 
+      - id: "{{ nic_id }}"
+    os_disk:
+      name: "{{ vm_name }}-osdisk"
+      caching: "ReadWrite"
+      storage_account_type: "Standard_LRS"
+    image:
+      publisher: "Canonical"
+      offer: "UbuntuServer"
+      sku: "18.04-LTS"
+      version: "latest"

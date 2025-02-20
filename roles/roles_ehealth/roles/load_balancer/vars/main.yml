@@ -1,0 +1,8 @@
+---
+# vars file for load_balancer
+lb_name: "lb-public"
+resource_group_name: "{{ resource_group_name }}"
+resource_group_location: "{{ resource_group_location }}"
+frontendIpConfig:
+  name: "lb_public_fip_name"
+  public_ip_address_id: "{{ public_ip_id }}"
