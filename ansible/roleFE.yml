@@ -1,0 +1,7 @@
+# Appel du rôle frontend
+- name: use frontend role playbook 
+  hosts: server-frontend
+  become: yes
+
+  roles: 
+    - role: frontend 
