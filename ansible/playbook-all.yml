@@ -1,0 +1,17 @@
+- name: use mysql role playbook 
+  hosts: server-database
+  become: yes
+  roles: 
+    - role: mysql
+
+- name: use frontend role playbook 
+  hosts: server-frontend
+  become: yes
+  roles: 
+    - role: frontend
+
+- name: use backend role playbook 
+  hosts: server-backend
+  become: yes
+  roles: 
+    - role: backend

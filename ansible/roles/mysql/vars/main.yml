@@ -1,2 +1,1 @@
----
-# vars file for mysql
+var1: "MySQL server"

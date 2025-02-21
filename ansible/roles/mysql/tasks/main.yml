@@ -1,3 +1,8 @@
+- name: copy mysql file 
+  template: 
+    src: templates/database.j2
+    dest: /tmp/welcome.txt
+
 - name: "Install MySQL server"
   shell: apt-get -y install mysql-server 
     

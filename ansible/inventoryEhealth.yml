@@ -4,5 +4,5 @@
 [server-backend]
 172.16.12.55 ansible_user=vagrant ansible_password=vagrant
 
-[server-db]
+[server-database]
 172.16.13.59 ansible_user=vagrant ansible_password=vagrant

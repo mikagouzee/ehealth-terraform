@@ -3,12 +3,12 @@
     src: templates/frontend.j2
     dest: "/tmp/frontend.txt"
   tasks:
-    - name: "apt-get update"
-      apt: 
-        update_cache: yes
-        cache_valid_time: 3600
-    - name: "install nginx"
-      apt:
-        name: nginx
-        state: latest
-      notify: restart nginx
+- name: "apt-get update"
+  apt: 
+    update_cache: yes
+    cache_valid_time: 3600
+- name: "install nginx"
+  apt:
+    name: nginx
+    state: latest
+  notify: restart nginx
