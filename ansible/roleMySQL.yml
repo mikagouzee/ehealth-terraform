@@ -1,0 +1,7 @@
+# Appel du rôle mysql
+- name: use mysql role playbook 
+  hosts: server-database
+  become: yes
+
+  roles: 
+    - role: mysql
