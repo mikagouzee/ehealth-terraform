@@ -1,0 +1,34 @@
+---
+# tasks file for role_backDB
+- hosts: servermysql
+  become: yes
+  gather_facts: false
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    new_mysql_root_password: redacted
+    mysqlsoftware:
+    - mysql-server
+    - mysql-client
+
+  tasks:
+
+  - name: Ensure pip is installed
+    apt:
+      name: python3-pip
+      state: present
+
+  - name: Install PyMySQL
+    pip:
+      name: PyMySQL
+      state: present
+  
+  - name: Install MySQL server and client
+    apt:
+      name: "{{ mysqlsoftware }}"
+      state: present
+      update_cache: yes
+
+  - name: Start the MySQL service
+    service:
+      name: mysql
+      state: started

@@ -1,0 +1,14 @@
+---
+# tasks file for role_back
+- name: update and install tomcat
+  
+  tasks:
+    - name: "apt-get update"
+      apt: 
+        update_cache: yes
+        cache_valid_time: 3600
+    - name: "install tomcat"
+      apt:
+        name: tomcat
+        state: latest
+      notify: restart tomcat
