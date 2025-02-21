@@ -1,0 +1,26 @@
+- name: Installer les dépendances
+  apt:
+    name: 
+      - openjdk-17-jdk
+      - maven
+      - git
+    state: present
+    update_cache: yes
+
+- name: Cloner le dépôt ehealth-back
+  git:
+    repo: "https://github.com/mikagouzee/ehealth-back.git"
+    dest: "/opt/ehealth-back"
+    version: main
+
+- name: Compiler le projet avec Maven
+  command:
+    cmd: mvn clean package
+    chdir: /opt/ehealth-back
+
+- name: Démarrer l'application
+  command:
+    cmd: java -jar /opt/ehealth-back/target/*.jar
+  async: 1000
+  poll: 0
+

@@ -1,0 +1,8 @@
+[Target1]
+172.16.1.51 ansible_user=vagrant ansible_password=vagrant
+
+[Target2]
+172.16.1.52 ansible_user=vagrant ansible_password=vagrant
+
+[Target3]
+172.16.1.53 ansible_user=vagrant ansible_password=vagrant
